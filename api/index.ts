@@ -30,6 +30,7 @@ const contract = new ethers.Contract(contractAddress, abi, wallet);
 
 // Route to create a task
 app.post('/create-task', (req, res) => {
+    console.log("add new")
     const { epochTime } = req.body;
 
     taskCounter++;
