@@ -21,7 +21,7 @@ let taskCounter = 0;
 const tasks = {};
 
 // Replace with your contract ABI and address
-const contractAddress = '0x3CFEA44C62484543705223F8F63d9Cb891658E63';
+const contractAddress = '0xA292b2D4D75d79b760c710043Fc5022FBE6946c7';
 
 // Replace with your provider and wallet details
 const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/439f92e674e24e8bbf14a786406bbf11'); // Use the appropriate RPC URL
