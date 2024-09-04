@@ -1,13 +1,3 @@
-// const express = require("express");
-// const app = express();
-
-// app.get("/", (req, res) => res.send("Express on Vercel"));
-
-// app.listen(3000, () => console.log("Server ready on port 3000."));
-
-// module.exports = app;
-
-
 
 const express = require('express');
 const { ethers } = require('ethers');
@@ -29,9 +19,10 @@ const wallet = new ethers.Wallet('afdcc47bc2c0a61d98eb54756136d989a162fea6090e30
 const contract = new ethers.Contract(contractAddress, abi, wallet);
 
 // Route to create a task
-app.post('/create-task', (req, res) => {
+app.post('/create-task', async (req, res) => {
     console.log("add new")
-    const { epochTime } = req.body;
+    const { epochTime, timeRequired, level, dependencies, wage, divisible} = req.body;
+    const workerDetails = await contract.addTask(timeRequired, level, dependencies, wage, epochTime, divisible);
 
     taskCounter++;
     const taskNumber = taskCounter;
@@ -45,6 +36,49 @@ app.post('/create-task', (req, res) => {
 
     res.json({ taskNumber });
 });
+// 
+
+app.post('/register-worker', async (req, res) => {
+    console.log("add new")
+    const { walletAdd, level, avb, wage} = req.body;
+    const workerDetails = await contract.registerWorker(walletAdd, avb, level, wage);
+    console.log("register-worker");
+    res.json({walletAdd : "added" });
+});
+
+app.post('get-worker', async(req, res) => {
+    const {walletAdd} = req.body;
+    const workerDetails = await contract.getWorkerDetails(walletAdd);
+    res.json({
+        hours : workerDetails[0],
+        level : workerDetails[1],
+        wage: workerDetails[2],
+        totalEarnings : workerDetails[3],
+        completedTask: workerDetails[4],
+        isRegistered: workerDetails[5],
+    })
+})
+app.post('get-task', async(req, res) => {
+    const {taskId} = req.body;
+    const task = contract.getTaskDetails(taskId);
+    res.json({
+        hours: task[0],
+        level: task[1],
+        wage: task[2],
+        deadline: task[3],
+        isDivisible: task[4],
+        assignedworkers: task[5],
+        isComplete: task[6]
+    })
+})
+app.post('delete-register', async(req, res) => {
+    const {workerId} = res.body;
+    const worker = contract.deregisterWorker(workerId);
+    res.json({
+        workerId: "deregsiter"
+    })
+})
+
 
 async function executeTask(taskNumber) {
     console.log(`Executing task number: ${taskNumber}`);
